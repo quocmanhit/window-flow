@@ -99,15 +99,12 @@ final class SwitcherPanel {
     }
     private var tiles: [TileView] = []
     private var titles: [String] = []
-    private lazy var caption: NSTextField = {
-        let field = NSTextField(labelWithString: "")
-        field.alignment = .center
-        field.lineBreakMode = .byTruncatingMiddle
-        field.maximumNumberOfLines = 1
-        field.textColor = .labelColor
-        container.addSubview(field)
-        return field
+    private lazy var caption: CaptionPill = {
+        let pill = CaptionPill()
+        container.addSubview(pill)
+        return pill
     }()
+    private var captionStrip = NSRect.zero
     private var icons: [pid_t: NSImage] = [:]
     private var count = 0
     private var columns = 1
@@ -159,10 +156,8 @@ final class SwitcherPanel {
         caption.isHidden = captionHeight == 0
         if captionHeight > 0 {
             caption.font = .systemFont(ofSize: CGFloat(metrics.fontSize) + 1, weight: .medium)
-            // The strip sits between the last row and the bottom padding, text centered in it.
-            let textHeight = CGFloat(metrics.fontSize) + 6
-            caption.frame = NSRect(x: pad + 8, y: pad + (captionHeight - textHeight) / 2 - 4,
-                                   width: size.width - 2 * pad - 16, height: textHeight)
+            // The strip sits between the last row and the bottom padding; the pill is centered in it.
+            captionStrip = NSRect(x: pad, y: pad - 4, width: size.width - 2 * pad, height: captionHeight)
             updateCaption()
         }
         panel.orderFrontRegardless()
@@ -182,7 +177,7 @@ final class SwitcherPanel {
 
     private func updateCaption() {
         guard !caption.isHidden, titles.indices.contains(selected) else { return }
-        caption.stringValue = titles[selected]
+        caption.show(titles[selected], centeredIn: captionStrip)
     }
 
     func hide() {
@@ -247,6 +242,49 @@ final class SwitcherPanel {
     }
 }
 
+// The glass takes the color of whatever is behind the panel, and the window server never tells it whether that is light
+// or dark, so the selected title sits on its own pill: readable over any backdrop.
+private final class CaptionPill: NSView {
+    private let label = NSTextField(labelWithString: "")
+    var font: NSFont? {
+        get { label.font }
+        set { label.font = newValue }
+    }
+
+    init() {
+        super.init(frame: .zero)
+        wantsLayer = true
+        label.alignment = .center
+        label.lineBreakMode = .byTruncatingTail
+        label.maximumNumberOfLines = 1
+        label.textColor = .switcherCaptionText
+        addSubview(label)
+    }
+
+    required init?(coder: NSCoder) { fatalError("not used") }
+
+    override var wantsUpdateLayer: Bool { true }
+    override func hitTest(_ point: NSPoint) -> NSView? { nil }
+
+    override func updateLayer() {
+        layer?.cornerRadius = bounds.height / 2
+        layer?.backgroundColor = NSColor.switcherCaptionFill.cgColor
+        layer?.borderWidth = 1 / (window?.backingScaleFactor ?? 2)
+        layer?.borderColor = NSColor.switcherHairline.cgColor
+    }
+
+    func show(_ text: String, centeredIn strip: NSRect) {
+        label.stringValue = text
+        let fontSize = font?.pointSize ?? 13
+        let inset = fontSize, textHeight = ceil(fontSize + 5)
+        let height = textHeight + 8
+        let width = min(ceil(label.cell?.cellSize.width ?? 0) + 2 * inset, strip.width)
+        frame = NSRect(x: strip.midX - width / 2, y: strip.midY - height / 2, width: width, height: height).integral
+        label.frame = NSRect(x: inset, y: (frame.height - textHeight) / 2, width: frame.width - 2 * inset, height: textHeight)
+        needsDisplay = true
+    }
+}
+
 private final class HairlineBorder: NSView {
     private let radius: CGFloat
 
@@ -278,6 +316,8 @@ extension NSColor {
     static let switcherHairline = light(.black.withAlphaComponent(0.12), dark: .white.withAlphaComponent(0.2))
     // Measured from the macOS app switcher: its selection darkens the panel by about 22%.
     static let switcherSelection = light(.black.withAlphaComponent(0.2), dark: .white.withAlphaComponent(0.2))
+    static let switcherCaptionFill = light(.white.withAlphaComponent(0.88), dark: .black.withAlphaComponent(0.55))
+    static let switcherCaptionText = light(.black.withAlphaComponent(0.85), dark: .white.withAlphaComponent(0.95))
 }
 
 // Never key or main: the app that was frontmost keeps keyboard focus while the panel is up.
