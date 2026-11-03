@@ -20,6 +20,7 @@ public enum ShortcutDefaults {
         .lastTwoThirds: Shortcut(keyCode: 17, modifiers: co),
         .maximize: Shortcut(keyCode: 36, modifiers: co),
         .maximizeHeight: Shortcut(keyCode: 126, modifiers: co | Shortcut.shift),
+        .toggleMaximize: Shortcut(keyCode: 36, modifiers: co | Shortcut.command),
         .larger: Shortcut(keyCode: 24, modifiers: co),
         .smaller: Shortcut(keyCode: 27, modifiers: co),
         .center: Shortcut(keyCode: 8, modifiers: co),

@@ -6,6 +6,7 @@ final class WindowManager {
     private let settings: Settings
     private var cycles = CycleTracker()
     private var restores = RestoreStore()
+    private var zooms = ZoomToggle()
     private var requests: [UInt32: (target: CGRect, readBack: CGRect)] = [:]
 
     static let axTimeout: Float = 1.0
@@ -23,9 +24,23 @@ final class WindowManager {
 
         switch action {
         case .restore:
-            guard let saved = restores.takeRestore(window: id) else { return }
-            requests[id] = nil
-            setFrame(saved, of: window)
+            restore(window, id: id)
+        case .toggleMaximize:
+            let visible = screens[index].visible
+            guard let target = Layout.frame(for: .maximize, window: current, screen: visible, gap: CGFloat(settings.gap), step: 0)
+            else { return }
+            switch zooms.step(window: id, current: current, maximized: target) {
+            case .maximize:
+                let result = apply(target, action: action, screen: visible, to: window, id: id, tracked: tracked)
+                zooms.didZoom(window: id, to: result)
+            case .restore(let before):
+                requests[id] = nil
+                setFrame(before, of: window)
+                // The pre-zoom frame may itself be a WindowFlow layout, so Restore keeps its older baseline.
+                restores.lastApplied(window: id, frame: frame(of: window) ?? before)
+            case .restoreOriginal:
+                restore(window, id: id)
+            }
         case .nextDisplay, .previousDisplay:
             let order = DisplayMove.order(screens.map(\.visible))
             guard let position = order.firstIndex(of: index), order.count > 1 else { return }
@@ -44,7 +59,14 @@ final class WindowManager {
 
     func forget(window: UInt32) {
         restores.forget(window: window)
+        zooms.forget(window: window)
         requests[window] = nil
+    }
+
+    private func restore(_ window: AXUIElement, id: UInt32) {
+        guard let saved = restores.takeRestore(window: id) else { return }
+        requests[id] = nil
+        setFrame(saved, of: window)
     }
 
     func frame(of window: AXUIElement) -> CGRect? {

@@ -19,6 +19,7 @@ extension WindowAction {
         case .maximize: tr("Maximize", "Phóng to")
         case .almostMaximize: tr("Almost maximize", "Gần toàn màn hình")
         case .maximizeHeight: tr("Maximize height", "Cao tối đa")
+        case .toggleMaximize: tr("Maximize / restore size", "Phóng to / thu lại")
         case .larger: tr("Larger", "To ra")
         case .smaller: tr("Smaller", "Nhỏ lại")
         case .center: tr("Center", "Căn giữa")

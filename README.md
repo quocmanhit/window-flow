@@ -19,6 +19,8 @@
 - **Keyboard window management** with Rectangle-style defaults: halves, quarters, thirds, two-thirds, maximize,
   almost maximize, maximize height, larger, smaller, center, restore, and moving a window to the next or previous
   display. Repeating a half shortcut cycles the width through 1/2, 2/3 and 1/3.
+- **Maximize / restore size**: one shortcut that works like double-clicking a title bar: press it to fill the screen,
+  press it again to put the window back where it was.
 - **Gap between windows**: 0–30 pt around tiled windows and the screen edges.
 - **Every shortcut is re-bindable** or can be cleared from Settings.
 - **English and Vietnamese UI**: chosen on first launch, switchable any time from the menu or Settings.
@@ -89,6 +91,7 @@ Hovering a tile selects it and clicking switches to it. Picking a window on anot
 | First / Center / Last third | ⌃⌥D / ⌃⌥F / ⌃⌥G |
 | First / Last two-thirds | ⌃⌥E / ⌃⌥T |
 | Maximize / Almost maximize / Maximize height | ⌃⌥↩ / unassigned / ⌃⌥⇧↑ |
+| Maximize / restore size (toggle) | ⌃⌥⌘↩ |
 | Larger / Smaller | ⌃⌥= / ⌃⌥- |
 | Center / Restore | ⌃⌥C / ⌃⌥⌫ |
 | Next / Previous display | ⌃⌥⌘→ / ⌃⌥⌘← |

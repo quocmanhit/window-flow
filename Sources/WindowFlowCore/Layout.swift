@@ -22,7 +22,7 @@ public enum Layout {
         case .lastThird: return fraction(2 * t, 0, 1, 1, screen, gap)
         case .firstTwoThirds: return fraction(0, 0, 2 * t, 1, screen, gap)
         case .lastTwoThirds: return fraction(t, 0, 1, 1, screen, gap)
-        case .maximize: return fraction(0, 0, 1, 1, screen, gap)
+        case .maximize, .toggleMaximize: return fraction(0, 0, 1, 1, screen, gap)
         case .almostMaximize: return fraction(0.05, 0.05, 0.95, 0.95, screen, 0)
         case .maximizeHeight:
             let v = fraction(0, 0, 1, 1, screen, gap)
@@ -45,12 +45,12 @@ public enum Layout {
         var x = target.minX, y = target.minY
         switch action {
         case .rightHalf, .lastThird, .lastTwoThirds, .topRight, .bottomRight: x = target.maxX - actual.width
-        case .center, .almostMaximize, .maximize, .centerThird: x = target.midX - actual.width / 2
+        case .center, .almostMaximize, .maximize, .toggleMaximize, .centerThird: x = target.midX - actual.width / 2
         default: break
         }
         switch action {
         case .bottomHalf, .bottomLeft, .bottomRight: y = target.maxY - actual.height
-        case .center, .almostMaximize, .maximize: y = target.midY - actual.height / 2
+        case .center, .almostMaximize, .maximize, .toggleMaximize: y = target.midY - actual.height / 2
         default: break
         }
         // max last: a window larger than the screen starts at the screen's origin.

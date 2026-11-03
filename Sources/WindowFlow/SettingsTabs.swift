@@ -66,7 +66,7 @@ private var actionGroups: [(title: String, actions: [WindowAction])] {
         (tr("Quarters", "Một phần tư"), [.topLeft, .topRight, .bottomLeft, .bottomRight]),
         (tr("Thirds", "Một phần ba"), [.firstThird, .centerThird, .lastThird]),
         (tr("Two-thirds", "Hai phần ba"), [.firstTwoThirds, .lastTwoThirds]),
-        (tr("Maximize", "Phóng to"), [.maximize, .almostMaximize, .maximizeHeight]),
+        (tr("Maximize", "Phóng to"), [.maximize, .toggleMaximize, .almostMaximize, .maximizeHeight]),
         (tr("Size", "Kích thước"), [.larger, .smaller]),
         (tr("Center and restore", "Căn giữa và khôi phục"), [.center, .restore]),
         (tr("Displays", "Màn hình"), [.nextDisplay, .previousDisplay]),
