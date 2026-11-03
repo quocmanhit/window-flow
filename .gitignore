@@ -1,0 +1,43 @@
+# Build output and packaged releases
+.build/
+build/
+*.dmg
+*.zip
+
+# Swift Package Manager / Xcode
+.swiftpm/
+*.xcodeproj/
+xcuserdata/
+DerivedData/
+
+# Editors and macOS
+.DS_Store
+.vscode/
+.idea/
+*.swp
+
+# Local config, credentials and signing material
+.env*
+*.p12
+*.cer
+*.mobileprovision
+*.provisionprofile
+
+# AI assistant files
+.claude/
+CLAUDE.md
+
+
+# Local planning docs
+docs/superpowers/
+
+# Logo sources: only the app icon, menu bar icon and README logo are needed
+WindowFlow-Logo/*
+!WindowFlow-Logo/WindowFlow.icns
+!WindowFlow-Logo/menubar/
+WindowFlow-Logo/menubar/*.svg
+!WindowFlow-Logo/icon/
+WindowFlow-Logo/icon/*
+!WindowFlow-Logo/icon/AppIcon.iconset/
+WindowFlow-Logo/icon/AppIcon.iconset/*
+!WindowFlow-Logo/icon/AppIcon.iconset/icon_128x128@2x.png
