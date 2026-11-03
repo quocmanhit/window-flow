@@ -18,6 +18,11 @@ struct SwitcherTab: View {
 
     private var isCommandTab: Bool { settings.switcherShortcut.normalized == ShortcutDefaults.commandTab }
 
+    private func appearance<T>(_ key: WritableKeyPath<SwitcherAppearance, T>) -> Binding<T> {
+        Binding(get: { settings.switcherAppearance[keyPath: key] },
+                set: { var value = settings.switcherAppearance; value[keyPath: key] = $0; settings.switcherAppearance = value })
+    }
+
     var body: some View {
         Form {
             Section(tr("Shortcut", "Phím tắt")) {
@@ -42,6 +47,47 @@ struct SwitcherTab: View {
                     get: { settings.includeMinimized }, set: { settings.includeMinimized = $0 }))
                 Toggle(tr("Include windows from all Spaces", "Gồm cả cửa sổ ở mọi Space"), isOn: Binding(
                     get: { settings.allSpaces }, set: { settings.allSpaces = $0 }))
+            }
+            Section {
+                Picker(tr("Size", "Cỡ"), selection: appearance(\.size)) {
+                    Text(tr("Small", "Nhỏ")).tag(SwitcherSize.small)
+                    Text(tr("Medium", "Vừa")).tag(SwitcherSize.medium)
+                    Text(tr("Large", "Lớn")).tag(SwitcherSize.large)
+                }
+                .pickerStyle(.segmented)
+                Picker(tr("Window titles", "Tên cửa sổ"), selection: appearance(\.titles)) {
+                    Text(tr("All", "Tất cả")).tag(SwitcherTitles.all)
+                    Text(tr("Selected", "Ô đang chọn")).tag(SwitcherTitles.selected)
+                    Text(tr("None", "Ẩn")).tag(SwitcherTitles.none)
+                }
+                .pickerStyle(.segmented)
+                Picker(tr("Background", "Nền"), selection: appearance(\.background)) {
+                    Text(tr("Glass", "Kính")).tag(SwitcherBackground.glass)
+                    Text(tr("Blur", "Mờ")).tag(SwitcherBackground.blur)
+                }
+                .pickerStyle(.segmented)
+                .disabled(!SwitcherPanel.glassAvailable)
+                if SwitcherPanel.glassAvailable && settings.switcherAppearance.background == .glass {
+                    LabeledContent(tr("Glass opacity", "Độ mờ của kính")) {
+                        HStack {
+                            Text(tr("Clear", "Trong")).foregroundStyle(.secondary)
+                            Slider(value: appearance(\.opacity), in: 0...1)
+                            Text(tr("Frosted", "Mờ đục")).foregroundStyle(.secondary)
+                        }
+                        .frame(maxWidth: 360)
+                    }
+                }
+                Picker(tr("Selection", "Khung chọn"), selection: appearance(\.highlight)) {
+                    Text(tr("Gray", "Xám")).tag(SwitcherHighlight.neutral)
+                    Text(tr("Accent color", "Màu nhấn")).tag(SwitcherHighlight.accent)
+                }
+                .pickerStyle(.segmented)
+            } header: {
+                Text(tr("Appearance", "Giao diện"))
+            } footer: {
+                if !SwitcherPanel.glassAvailable {
+                    Text(tr("Glass needs macOS 26 or later.", "Nền kính cần macOS 26 trở lên."))
+                }
             }
             Section {
                 Toggle(tr("Always show on the main display", "Luôn hiện ở màn hình chính"), isOn: Binding(

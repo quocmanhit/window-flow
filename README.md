@@ -11,6 +11,9 @@
 - **Alt-Tab for windows**: hold ⌥ Option and press Tab to pick any window, not just any app. The list covers every
   Space and minimized windows, shows the app icon and window title, and is ordered by recent use. A quick tap
   toggles between the last two windows without showing the list.
+- **Switcher appearance**: small, medium or large tiles, window titles under every tile, only for the
+  selected window (like ⌘Tab) or none, a Liquid Glass (macOS 26+)
+  background with adjustable opacity or a blurred one, and a gray or accent-colored selection.
 - **Pick the display**: the switcher opens on the display under the pointer, or always on the main display if you
   prefer.
 - **Replace ⌘Tab**: one click makes ⌘Tab open WindowFlow instead of the macOS app switcher, or record any other
@@ -32,11 +35,13 @@
 
 ## Screenshots
 
-| Switcher | Shortcuts |
+<img src="docs/images/switcher.png" alt="WindowFlow switcher with Liquid Glass">
+
+| Switcher | Appearance |
 | --- | --- |
-| <img src="docs/images/settings-switcher.png" width="420" alt="Switcher settings"> | <img src="docs/images/settings-shortcuts.png" width="420" alt="Shortcut settings"> |
-| **General** | |
-| <img src="docs/images/settings-general.png" width="420" alt="General settings"> | |
+| <img src="docs/images/settings-switcher.png" width="420" alt="Switcher settings"> | <img src="docs/images/settings-switcher-appearance.png" width="420" alt="Switcher appearance settings"> |
+| **Shortcuts** | **General** |
+| <img src="docs/images/settings-shortcuts.png" width="420" alt="Shortcut settings"> | <img src="docs/images/settings-general.png" width="420" alt="General settings"> |
 
 ## Requirements
 

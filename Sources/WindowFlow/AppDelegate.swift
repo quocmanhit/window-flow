@@ -19,6 +19,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate, NSWind
         return icon
     }
 
+    private static func firstScrollView(in view: NSView) -> NSScrollView? {
+        if let scroll = view as? NSScrollView { return scroll }
+        for child in view.subviews { if let found = firstScrollView(in: child) { return found } }
+        return nil
+    }
+
     func applicationDidFinishLaunching(_ notification: Notification) {
         SystemSwitcherHotKey.restoreIfWeDisabledIt()
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
@@ -36,6 +42,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate, NSWind
             default: break
             }
             openSettings()
+            // `--scroll-bottom` shows the end of a long tab, for screenshots.
+            if args.contains("--scroll-bottom") {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
+                    guard let root = self?.settingsWindow?.contentView, let scroll = Self.firstScrollView(in: root),
+                          let document = scroll.documentView else { return }
+                    document.scroll(NSPoint(x: 0, y: document.isFlipped ? document.bounds.maxY : 0))
+                }
+            }
         }
         // The recorder's tap is system-wide, so it must not outlive the app's focus.
         NotificationCenter.default.addObserver(
@@ -84,6 +98,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate, NSWind
         guard keyTap.start() else { return false }
         catalog.start()
         switcher.start()
+        // `--preview-switcher` shows the panel for a few seconds, for screenshots of the design.
+        if CommandLine.arguments.contains("--preview-switcher") {
+            let demo = CommandLine.arguments.contains("--demo")
+            DispatchQueue.main.asyncAfter(deadline: .now() + 3) { [weak self] in self?.switcher.preview(demo: demo) }
+        }
         // objectWillChange fires before the value changes; the main-queue hop lets the setter finish first.
         settingsObserver = settings.objectWillChange.sink { [weak self] in
             DispatchQueue.main.async { self?.switcher.settingsChanged(); self?.catalog.settingsChanged() }

@@ -33,6 +33,21 @@ final class SwitcherController: SwitcherKeyHandling {
         settingsChanged()
     }
 
+    /// `demo` shows app names instead of window titles, so screenshots carry no private titles.
+    func preview(demo: Bool) {
+        var items = catalog.snapshot().items
+        if demo {
+            items = items.map { item in
+                guard !item.isGroup else { return item }
+                var entry = item.primary
+                entry.title = entry.appName
+                return SwitcherItem(entry)
+            }
+        }
+        panel.show(items, selected: min(1, items.count - 1), onMainDisplay: true, appearance: settings.switcherAppearance)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 8) { [self] in if !shown { panel.hide() } }
+    }
+
     func settingsChanged() {
         let shortcut = settings.switcherShortcut
         lock.lock(); machine.shortcut = shortcut; lock.unlock()
@@ -108,7 +123,7 @@ final class SwitcherController: SwitcherKeyHandling {
         lock.unlock()
         guard held else { reconcile(); return }
         shown = true
-        panel.show(entries, selected: index, onMainDisplay: settings.switcherOnMainDisplay)
+        panel.show(entries, selected: index, onMainDisplay: settings.switcherOnMainDisplay, appearance: settings.switcherAppearance)
         startWatchdog()
     }
 

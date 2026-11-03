@@ -24,3 +24,7 @@
   `WindowManager` sets size, position and size again, then reads the frame back: apps that refuse a size or apply it
   late are realigned so the window still sits against the intended edge.
 - Nothing runs while idle: no timers or polling. The switcher's watchdog timer only exists while the panel is shown.
+- The switcher panel is plain AppKit. Its Liquid Glass background is `NSGlassEffectView`, looked up at runtime because
+  the build SDK predates it; the private variant 6 with a white wash is what matches the macOS app switcher, and the
+  wash strength is the opacity setting. Without Liquid Glass it falls back to `NSVisualEffectView`, clipped by a mask
+  image because a layer corner radius does not clip a behind-window blur.

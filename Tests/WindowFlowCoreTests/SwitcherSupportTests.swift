@@ -27,3 +27,12 @@ import Testing
     #expect(SwitcherGrid.fit(extent: 1000, item: 128, spacing: 8, padding: 16) == 7)
     #expect(SwitcherGrid.fit(extent: 10, item: 128, spacing: 8, padding: 16) == 1)
 }
+
+@Test func gridColumnsBalanceTheRows() {
+    #expect(SwitcherGrid.columns(count: 10, fit: 9) == 5)
+    #expect(SwitcherGrid.columns(count: 9, fit: 9) == 9)
+    #expect(SwitcherGrid.columns(count: 3, fit: 9) == 3)
+    #expect(SwitcherGrid.columns(count: 19, fit: 9) == 7)
+    #expect(SwitcherGrid.columns(count: 5, fit: 0) == 1)
+    #expect(SwitcherGrid.columns(count: 0, fit: 9) == 1)
+}

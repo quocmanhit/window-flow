@@ -25,6 +25,7 @@ final class Settings: ObservableObject {
         defaults.removeObject(forKey: "snapEnabled")  // drag-to-snap was removed
         defaults.register(defaults: [
             Key.gap: 0.0, Key.includeMinimized: true, Key.allSpaces: true,
+            Key.switcherOpacity: 0.0, Key.switcherOnMainDisplay: true,
         ])
     }
 
@@ -83,6 +84,28 @@ final class Settings: ObservableObject {
         set { objectWillChange.send(); defaults.set(newValue, forKey: Key.switcherOnMainDisplay) }
     }
 
+    var switcherAppearance: SwitcherAppearance {
+        get {
+            SwitcherAppearance(
+                size: defaults.string(forKey: Key.switcherSize).flatMap(SwitcherSize.init(rawValue:)) ?? .large,
+                titles: defaults.string(forKey: Key.switcherTitles).flatMap(SwitcherTitles.init(rawValue:))
+                    // Earlier builds stored a plain on/off; off now means the selected window's title only.
+                    ?? (defaults.object(forKey: Key.switcherShowTitles) as? Bool == true ? .all : .selected),
+                background: defaults.string(forKey: Key.switcherBackground).flatMap(SwitcherBackground.init(rawValue:)) ?? .glass,
+                highlight: defaults.string(forKey: Key.switcherHighlight).flatMap(SwitcherHighlight.init(rawValue:)) ?? .neutral,
+                opacity: defaults.double(forKey: Key.switcherOpacity))
+        }
+        set {
+            objectWillChange.send()
+            defaults.set(newValue.size.rawValue, forKey: Key.switcherSize)
+            defaults.set(newValue.titles.rawValue, forKey: Key.switcherTitles)
+            defaults.removeObject(forKey: Key.switcherShowTitles)
+            defaults.set(newValue.background.rawValue, forKey: Key.switcherBackground)
+            defaults.set(newValue.highlight.rawValue, forKey: Key.switcherHighlight)
+            defaults.set(newValue.opacity, forKey: Key.switcherOpacity)
+        }
+    }
+
     var disableSystemCommandTab: Bool {
         get { SystemSwitcherHotKey.fallbackEnabled }
         set { objectWillChange.send(); SystemSwitcherHotKey.fallbackEnabled = newValue }
@@ -96,5 +119,11 @@ final class Settings: ObservableObject {
         static let includeMinimized = "includeMinimized"
         static let allSpaces = "allSpaces"
         static let switcherOnMainDisplay = "switcherOnMainDisplay"
+        static let switcherSize = "switcherSize"
+        static let switcherShowTitles = "switcherShowTitles"
+        static let switcherTitles = "switcherTitles"
+        static let switcherBackground = "switcherBackground"
+        static let switcherHighlight = "switcherHighlight"
+        static let switcherOpacity = "switcherOpacity"
     }
 }
