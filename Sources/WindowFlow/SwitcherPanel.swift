@@ -41,8 +41,8 @@ final class SwitcherPanel {
 
     var isVisible: Bool { panel.isVisible }
 
-    func show(_ entries: [SwitcherItem], selected: Int) {
-        guard !entries.isEmpty, let screen = pointerScreen() else { return }
+    func show(_ entries: [SwitcherItem], selected: Int, onMainDisplay: Bool) {
+        guard !entries.isEmpty, let screen = onMainDisplay ? NSScreen.screens.first : pointerScreen() else { return }
         let pad = Self.padding, spacing = Self.spacing, tile = Self.tile
         let fitColumns = SwitcherGrid.fit(extent: screen.frame.width * 0.8, item: tile.width, spacing: spacing, padding: pad)
         let fitRows = SwitcherGrid.fit(extent: screen.frame.height * 0.8, item: tile.height, spacing: spacing, padding: pad)

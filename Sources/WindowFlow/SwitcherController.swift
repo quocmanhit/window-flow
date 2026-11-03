@@ -108,7 +108,7 @@ final class SwitcherController: SwitcherKeyHandling {
         lock.unlock()
         guard held else { reconcile(); return }
         shown = true
-        panel.show(entries, selected: index)
+        panel.show(entries, selected: index, onMainDisplay: settings.switcherOnMainDisplay)
         startWatchdog()
     }
 

@@ -77,6 +77,12 @@ final class Settings: ObservableObject {
         set { objectWillChange.send(); defaults.set(newValue, forKey: Key.allSpaces) }
     }
 
+    /// Off: the switcher opens on the display under the pointer.
+    var switcherOnMainDisplay: Bool {
+        get { defaults.bool(forKey: Key.switcherOnMainDisplay) }
+        set { objectWillChange.send(); defaults.set(newValue, forKey: Key.switcherOnMainDisplay) }
+    }
+
     var disableSystemCommandTab: Bool {
         get { SystemSwitcherHotKey.fallbackEnabled }
         set { objectWillChange.send(); SystemSwitcherHotKey.fallbackEnabled = newValue }
@@ -89,5 +95,6 @@ final class Settings: ObservableObject {
         static let gap = "gap"
         static let includeMinimized = "includeMinimized"
         static let allSpaces = "allSpaces"
+        static let switcherOnMainDisplay = "switcherOnMainDisplay"
     }
 }

@@ -11,6 +11,8 @@
 - **Alt-Tab for windows**: hold ⌥ Option and press Tab to pick any window, not just any app. The list covers every
   Space and minimized windows, shows the app icon and window title, and is ordered by recent use. A quick tap
   toggles between the last two windows without showing the list.
+- **Pick the display**: the switcher opens on the display under the pointer, or always on the main display if you
+  prefer.
 - **Replace ⌘Tab**: one click makes ⌘Tab open WindowFlow instead of the macOS app switcher, or record any other
   shortcut.
 - **Window groups**: windows that together fill a display, for example two halves or four quarters, show up as one

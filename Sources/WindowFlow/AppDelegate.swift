@@ -172,6 +172,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate, NSWind
         }
     }
 
+    func windowDidBecomeKey(_ notification: Notification) {
+        if let window = notification.object as? NSWindow, window === settingsWindow { catalog.ownWindowBecameKey(window) }
+    }
+
     func windowDidResignKey(_ notification: Notification) {
         if notification.object as? NSWindow === settingsWindow { recorder.cancel() }
     }

@@ -137,7 +137,21 @@ final class WindowCatalog {
         }
     }
 
+    /// WindowFlow's own titled windows (Settings). They are read through AppKit: Accessibility calls into our own
+    /// process from the main thread would block on the main thread itself.
+    static func ownWindows() -> [NSWindow] {
+        NSApp.windows.filter { !($0 is NSPanel) && $0.styleMask.contains(.titled) && ($0.isVisible || $0.isMiniaturized) }
+    }
+
+    // windowNumber is -1 for a window that has never been on screen, so every conversion must be checked.
+    func ownWindowBecameKey(_ window: NSWindow) {
+        if let id = UInt32(exactly: window.windowNumber), id != 0 { mru.touch(id) }
+    }
+
     private func currentFocus() -> Focus {
+        if NSWorkspace.shared.frontmostApplication?.processIdentifier == getpid() {
+            return NSApp.keyWindow.flatMap { UInt32(exactly: $0.windowNumber) }.map { .window($0) } ?? .none
+        }
         guard let front = NSWorkspace.shared.frontmostApplication, apps[front.processIdentifier] != nil else { return .none }
         let pid = front.processIdentifier
         if unresponsive.contains(pid) { return .unreachable(pid) }
@@ -199,6 +213,14 @@ final class WindowCatalog {
             }
         }
         for (pid, id) in dead { remove(id: id, pid: pid) }
+        for window in Self.ownWindows() {
+            guard let id = UInt32(exactly: window.windowNumber), id != 0 else { continue }
+            let minimized = window.isMiniaturized
+            if minimized && !includeMinimized { continue }
+            if !allSpaces && !minimized && !window.isOnActiveSpace { continue }
+            entries[id] = WindowEntry(id: id, pid: getpid(), element: AXUIElementCreateApplication(getpid()),
+                                      appName: "WindowFlow", title: window.title, isMinimized: minimized)
+        }
         let ordered = SwitcherOrdering.order(Array(entries.keys.sorted()), mru: mru, zOrder: list.zOrder).compactMap { entries[$0] }
         let focus = currentFocus()
         let items = items(from: ordered, list: list, focus: focus)

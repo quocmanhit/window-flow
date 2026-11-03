@@ -44,6 +44,13 @@ struct SwitcherTab: View {
                     get: { settings.allSpaces }, set: { settings.allSpaces = $0 }))
             }
             Section {
+                Toggle(tr("Always show on the main display", "Luôn hiện ở màn hình chính"), isOn: Binding(
+                    get: { settings.switcherOnMainDisplay }, set: { settings.switcherOnMainDisplay = $0 }))
+            } footer: {
+                Text(tr("The main display is set in System Settings → Displays. When off, the switcher opens on the display under the pointer.",
+                        "Màn hình chính chọn trong Cài đặt hệ thống → Màn hình. Khi tắt, bảng chuyển cửa sổ hiện ở màn hình đang có con trỏ chuột."))
+            }
+            Section {
                 Toggle(
                     tr("Also turn off the macOS ⌘Tab switcher (use if ⌘Tab still shows the system switcher)",
                        "Tắt luôn bộ chuyển app ⌘Tab của macOS (dùng nếu ⌘Tab vẫn hiện bộ chuyển của hệ thống)"),

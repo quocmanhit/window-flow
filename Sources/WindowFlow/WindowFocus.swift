@@ -18,7 +18,8 @@ enum WindowFocus {
     // when that path was used, since makeKey needs it.
     private static func bringToFront(_ entry: WindowEntry) -> PrivateAPI.PSN? {
         if entry.isMinimized {
-            AXUIElementSetAttributeValue(entry.element, kAXMinimizedAttribute as CFString, kCFBooleanFalse)
+            if let own = ownWindow(entry) { own.deminiaturize(nil) }
+            else { AXUIElementSetAttributeValue(entry.element, kAXMinimizedAttribute as CFString, kCFBooleanFalse) }
         }
         let app = NSRunningApplication(processIdentifier: entry.pid)
         if app?.isHidden == true { app?.unhide() }
@@ -49,11 +50,25 @@ enum WindowFocus {
                 bytes[0x08] = kind
                 _ = post(&psn, &bytes)
             }
-            AXUIElementPerformAction(entry.element, kAXRaiseAction as CFString)
+            if let own = ownWindow(entry) { raiseOwn(own) } else { AXUIElementPerformAction(entry.element, kAXRaiseAction as CFString) }
+        } else if let own = ownWindow(entry) {
+            raiseOwn(own)
         } else {
             AXUIElementPerformAction(entry.element, kAXRaiseAction as CFString)
             AXUIElementSetAttributeValue(entry.element, kAXMainAttribute as CFString, kCFBooleanTrue)
         }
+    }
+
+    // Our own windows are driven through AppKit; an AX call into this process from main would block on itself.
+    private static func ownWindow(_ entry: WindowEntry) -> NSWindow? {
+        guard entry.pid == getpid() else { return nil }
+        return NSApp.windows.first { $0.windowNumber == Int(entry.id) }
+    }
+
+    private static func raiseOwn(_ window: NSWindow) {
+        NSApp.activate()
+        window.makeKeyAndOrderFront(nil)
+        window.orderFrontRegardless()
     }
 
 }
